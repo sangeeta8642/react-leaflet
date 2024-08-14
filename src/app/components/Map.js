@@ -22,6 +22,8 @@ const markers = [
   { position: [13.0827, 80.2707], label: "Chennai" },
   { position: [22.5726, 88.3639], label: "Kolkata" },
   { position: [12.9716, 77.5946], label: "Bangalore" },
+  { position: [17.385044, 78.486671], label: "Hyderabad" },
+  { position: [18.5204, 73.8567], label: "Pune" }  
 ];
 
 const MapComponent = () => {
