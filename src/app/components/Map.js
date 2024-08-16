@@ -1,7 +1,8 @@
-"use client"
+"use client";
 import { useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import 'leaflet/dist/leaflet.css';
+import { useMap } from 'react-leaflet';
 
 const MapContainer = dynamic(() => import('react-leaflet').then(mod => mod.MapContainer), { ssr: false });
 const TileLayer = dynamic(() => import('react-leaflet').then(mod => mod.TileLayer), { ssr: false });
@@ -15,9 +16,10 @@ const markers = [
   { position: [22.5726, 88.3639], label: "Kolkata" },
   { position: [12.9716, 77.5946], label: "Bangalore" }
 ];
+const initialPosition = markers[0].position;
 
 const MapComponent = () => {
-  const [map, setMap] = useState(null);
+  const [mapCenter, setMapCenter] = useState(initialPosition);
   const [LInstance, setLInstance] = useState(null);
 
   useEffect(() => {
@@ -26,10 +28,19 @@ const MapComponent = () => {
     });
   }, []);
 
+  const CenterMap = ({ center }) => {
+    const map = useMap();    
+    useEffect(() => {
+      map.setView(center, map.getZoom());
+    }, [center, map]);
+
+    return null;
+  };
+
   const handleMarkerClick = (position) => {
-    if (map) {
-      map.setView(position, map.getZoom());
-    }
+    setMapCenter(position);
+    console.log(position);
+    
   };
 
   const customIcon = LInstance ? new LInstance.Icon({
@@ -43,10 +54,9 @@ const MapComponent = () => {
 
   return (
     <MapContainer
-      center={[20.5937, 78.9629]} 
+      center={mapCenter}
       zoom={5}
       style={{ height: "100vh", width: "100%" }}
-      whenCreated={setMap}
     >
       <TileLayer
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -56,7 +66,7 @@ const MapComponent = () => {
         <Marker
           key={index}
           position={marker.position}
-          icon={customIcon} 
+          icon={customIcon}
           eventHandlers={{
             click: () => handleMarkerClick(marker.position),
           }}
@@ -64,6 +74,7 @@ const MapComponent = () => {
           <Popup>{marker.label}</Popup>
         </Marker>
       ))}
+      <CenterMap center={mapCenter} />
     </MapContainer>
   );
 };
